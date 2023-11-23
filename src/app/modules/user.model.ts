@@ -1,28 +1,26 @@
 import { Schema, model } from 'mongoose';
 import { TAddress, TOrder, TUser, TUserName } from './user/user.interface';
+import validator from 'validator';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
     type: String,
     required: [true, 'First Name is required'],
     trim: true,
-    maxlength: [20, 'First Name can not be more than 20 characters'],
-    // validate: {
-    //   validator: function (value: string) {
-    //     const firstNameStr = value.charAt(0).toUpperCase() + value.slice(1);
-    //     return firstNameStr === value;
-    //   },
-    //   message: '{VALUE} is not in capitalize formate',
-    // },
+    maxlength: [20, 'First Name cannot be more than 20 characters'],
+    validate: {
+      validator: (value: string) => validator.isAlpha(value),
+      message: '{VALUE} is not in capitalize formate',
+    },
   },
   lastName: {
     type: String,
     trim: true,
     required: [true, 'Last Name is required'],
-    // validate: {
-    //   validator: (value: string) => validator.isAlpha(value),
-    //   message: '{VALUE} is not valid',
-    // },
+    validate: {
+      validator: (value: string) => validator.isAlpha(value),
+      message: '{VALUE} is not valid',
+    },
   },
 });
 
@@ -52,12 +50,10 @@ const userOrder = new Schema<TOrder>({
   },
   price: {
     type: Number,
-    trim: true,
     required: [true, 'Price is required'],
   },
   quantity: {
     type: Number,
-    trim: true,
     required: [true, 'Quantity is required'],
   },
 });
@@ -72,29 +68,45 @@ const userSchema = new Schema<TUser>({
     type: String,
     required: [true, 'User Name is required'],
     unique: true,
-    maxlength: [10, 'User Name can not be more than 10 characters'],
+    maxlength: [10, 'User Name cannot be more than 10 characters'],
   },
   password: {
     type: String,
     required: [true, 'Password is required'],
-    minlength: [8, 'password muat be minimum 8 characters'],
+    minlength: [8, 'Password must be minimum 8 characters'],
   },
-  fullName: userNameSchema,
-  age: { type: Number, required: [true, 'User Age is required'] },
+  fullName: {
+    type: userNameSchema,
+    required: [true, 'Full Name is required'],
+  },
+  age: {
+    type: Number,
+    required: [true, 'User Age is required'],
+  },
   email: {
     type: String,
     trim: true,
     required: [true, 'Email is required'],
     unique: true,
+    validate: {
+      validator: (value: string) => validator.isEmail(value),
+      message: '{VALUE} is not valid email',
+    },
   },
   isActive: {
     type: Boolean,
     default: true,
   },
   hobbies: [{ type: String }],
-  address: userAddress,
+  address: {
+    type: userAddress,
+    required: [true, 'Address is required'],
+  },
   orders: [userOrder],
-  isDeleted: { type: Boolean, default: false },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 export const UserModel = model<TUser>('User', userSchema);
