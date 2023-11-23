@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import { TAddress, TOrder, TUser, TUserName } from './user/user.interface';
 
 const userNameSchema = new Schema<TUserName>({
@@ -72,16 +72,14 @@ const userSchema = new Schema<TUser>({
     type: String,
     required: [true, 'User Name is required'],
     unique: true,
+    maxlength: [10, 'User Name can not be more than 10 characters'],
   },
   password: {
     type: String,
     required: [true, 'Password is required'],
     minlength: [8, 'password muat be minimum 8 characters'],
   },
-  fullName: {
-    type: userNameSchema,
-    required: [true, 'User FullName is required'],
-  },
+  fullName: userNameSchema,
   age: { type: Number, required: [true, 'User Age is required'] },
   email: {
     type: String,
@@ -94,12 +92,9 @@ const userSchema = new Schema<TUser>({
     default: true,
   },
   hobbies: [{ type: String }],
-  address: {
-    type: userAddress,
-    required: true,
-  },
+  address: userAddress,
   orders: [userOrder],
-  isDeleted: {},
+  isDeleted: { type: Boolean, default: false },
 });
 
-export const UserModel = mongoose.model<TUser>('User', userSchema);
+export const UserModel = model<TUser>('User', userSchema);
