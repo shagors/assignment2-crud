@@ -3,16 +3,21 @@ import { TUser } from './user.interface';
 
 const createUserIntoDB = async (userData: TUser) => {
   const result = await UserModel.create(userData);
+  return result;
+};
 
-  // const student = new Student(studentData);
-  // if (await student.isUserExists(studentData.id)) {
-  //   throw new Error('User already exists!');
-  // }
-  // const result = await student.save();
+const getAllUserFromDB = async () => {
+  const result = await UserModel.find();
+  return result;
+};
 
+const getUserFromDB = async (userId: number) => {
+  const result = await UserModel.findOne({ userId });
   return result;
 };
 
 export const UserServices = {
   createUserIntoDB,
+  getAllUserFromDB,
+  getUserFromDB,
 };
