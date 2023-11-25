@@ -1,6 +1,14 @@
 import { Schema, model } from 'mongoose';
-import { TAddress, TOrder, TUser, TUserName } from './user/user.interface';
-// import validator from 'validator';
+import {
+  TAddress,
+  TOrder,
+  TUser,
+  TUserMethods,
+  TUserModel,
+  TUserName,
+} from './user/user.interface';
+import bcrypt from 'bcrypt';
+import config from '../config';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -8,19 +16,11 @@ const userNameSchema = new Schema<TUserName>({
     required: [true, 'First Name is required'],
     trim: true,
     maxlength: [20, 'First Name cannot be more than 20 characters'],
-    // validate: {
-    //   validator: (value: string) => validator.isAlpha(value),
-    //   message: '{VALUE} is not in capitalize formate',
-    // },
   },
   lastName: {
     type: String,
     trim: true,
     required: [true, 'Last Name is required'],
-    // validate: {
-    //   validator: (value: string) => validator.isAlpha(value),
-    //   message: '{VALUE} is not valid',
-    // },
   },
 });
 
@@ -58,7 +58,7 @@ const userOrder = new Schema<TOrder>({
   },
 });
 
-const userSchema = new Schema<TUser>({
+const userSchema = new Schema<TUser, TUserModel, TUserMethods>({
   userId: {
     type: Number,
     required: [true, 'User ID is required'],
@@ -88,10 +88,6 @@ const userSchema = new Schema<TUser>({
     trim: true,
     required: [true, 'Email is required'],
     unique: true,
-    // validate: {
-    //   validator: (value: string) => validator.isEmail(value),
-    //   message: '{VALUE} is not valid email',
-    // },
   },
   isActive: {
     type: Boolean,
@@ -109,6 +105,35 @@ const userSchema = new Schema<TUser>({
   },
 });
 
+// pre save
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(user.password, Number(config.bcrypt_salt));
+  next();
+});
+
+// post
+userSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
+});
+
+userSchema.pre('find', async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+userSchema.pre('findOne', async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+userSchema.pre('aggregate', async function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
+});
+
 userSchema.statics.updateUserById = async function (
   userId: number,
   updatedUserData: Partial<TUser>,
@@ -116,10 +141,9 @@ userSchema.statics.updateUserById = async function (
   return this.findOneAndUpdate({ userId }, updatedUserData, { new: true });
 };
 
-userSchema.statics.getUserById = function (userId: number) {
-  return this.findOne({ userId });
+userSchema.statics.isUserExists = async function (userId: number) {
+  const existingUser = await UserModel.findOne({ userId });
+  return existingUser;
 };
 
-// export const UserModel = model<TUser & Document>('User', userSchema);
-
-export const UserModel = model<TUser>('User', userSchema);
+export const UserModel = model<TUser, TUserModel>('User', userSchema);
