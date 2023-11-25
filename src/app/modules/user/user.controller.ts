@@ -1,11 +1,15 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.service';
+import TUserValidationSchema from './user.validate';
 
 const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
 
-    const result = await UserServices.createUserIntoDB(user);
+    // Data validation
+    const userData = await TUserValidationSchema.parse(user);
+
+    const result = await UserServices.createUserIntoDB(userData);
 
     res.status(200).json({
       success: true,
@@ -19,6 +23,7 @@ const createUser = async (req: Request, res: Response) => {
       error: {
         code: 500,
         description: 'Something went wrong!',
+        error,
       },
     });
   }

@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { TAddress, TOrder, TUser, TUserName } from './user/user.interface';
-import validator from 'validator';
+// import validator from 'validator';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -8,19 +8,19 @@ const userNameSchema = new Schema<TUserName>({
     required: [true, 'First Name is required'],
     trim: true,
     maxlength: [20, 'First Name cannot be more than 20 characters'],
-    validate: {
-      validator: (value: string) => validator.isAlpha(value),
-      message: '{VALUE} is not in capitalize formate',
-    },
+    // validate: {
+    //   validator: (value: string) => validator.isAlpha(value),
+    //   message: '{VALUE} is not in capitalize formate',
+    // },
   },
   lastName: {
     type: String,
     trim: true,
     required: [true, 'Last Name is required'],
-    validate: {
-      validator: (value: string) => validator.isAlpha(value),
-      message: '{VALUE} is not valid',
-    },
+    // validate: {
+    //   validator: (value: string) => validator.isAlpha(value),
+    //   message: '{VALUE} is not valid',
+    // },
   },
 });
 
@@ -88,10 +88,10 @@ const userSchema = new Schema<TUser>({
     trim: true,
     required: [true, 'Email is required'],
     unique: true,
-    validate: {
-      validator: (value: string) => validator.isEmail(value),
-      message: '{VALUE} is not valid email',
-    },
+    // validate: {
+    //   validator: (value: string) => validator.isEmail(value),
+    //   message: '{VALUE} is not valid email',
+    // },
   },
   isActive: {
     type: Boolean,
