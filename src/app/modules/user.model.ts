@@ -109,4 +109,17 @@ const userSchema = new Schema<TUser>({
   },
 });
 
+userSchema.statics.updateUserById = async function (
+  userId: number,
+  updatedUserData: Partial<TUser>,
+) {
+  return this.findOneAndUpdate({ userId }, updatedUserData, { new: true });
+};
+
+userSchema.statics.getUserById = function (userId: number) {
+  return this.findOne({ userId });
+};
+
+// export const UserModel = model<TUser & Document>('User', userSchema);
+
 export const UserModel = model<TUser>('User', userSchema);
