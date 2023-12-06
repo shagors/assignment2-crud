@@ -30,7 +30,7 @@ const TOrderValidationSchema = z.object({
 
 export const TUserValidationSchema = z.object({
   userId: z.number().positive(),
-  userName: z.string().min(3).max(15),
+  username: z.string().min(3).max(15),
   password: z.string().min(8),
   fullName: TUserNameValidationSchema,
   age: z.number().positive(),
