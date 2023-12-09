@@ -1,19 +1,8 @@
 import { z } from 'zod';
 
 const TUserNameValidationSchema = z.object({
-  firstName: z
-    .string()
-    .min(3)
-    .max(20)
-    .refine((value) => /^[A-Za-z]+$/.test(value), {
-      message: 'First Name must contain only alphabetic characters',
-    }),
-  lastName: z
-    .string()
-    .min(3)
-    .refine((value) => /^[A-Za-z]+$/.test(value), {
-      message: 'Last Name must contain only alphabetic characters',
-    }),
+  firstName: z.string().min(3).max(20),
+  lastName: z.string().min(3),
 });
 
 const TAddressValidationSchema = z.object({
