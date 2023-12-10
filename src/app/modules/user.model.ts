@@ -15,7 +15,6 @@ const userNameSchema = new Schema<TUserName>({
     type: String,
     required: [true, 'First Name is required'],
     trim: true,
-    minlength: [3, 'First Name cannot be less than 3 characters'],
   },
   lastName: {
     type: String,
@@ -68,7 +67,6 @@ const userSchema = new Schema<TUser, TUserModel, TUserMethods>({
     type: String,
     required: [true, 'User Name is required'],
     unique: true,
-    maxlength: [3, 'User Name cannot be less than 3 characters'],
   },
   password: {
     type: String,
