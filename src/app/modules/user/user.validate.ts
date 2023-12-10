@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const TUserNameValidationSchema = z.object({
-  firstName: z.string().min(3).max(20),
+  firstName: z.string().min(3),
   lastName: z.string().min(3),
 });
 
@@ -19,8 +19,8 @@ const TOrderValidationSchema = z.object({
 
 export const TUserValidationSchema = z.object({
   userId: z.number().positive(),
-  username: z.string().min(3).max(15),
-  password: z.string().min(8),
+  username: z.string().min(3),
+  password: z.string().min(6),
   fullName: TUserNameValidationSchema,
   age: z.number().positive(),
   email: z.string().email(),
